@@ -52,7 +52,7 @@ wss.on("message", async function(message) {
         await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": "Bearer " + "",  // OpenAI API Key from environment variables
+                "Authorization": "Bearer " + process.env.OPENAI_API_KEY,  // OpenAI API Key from environment variables
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(apiRequestBody)  // Send the API request with the request body
