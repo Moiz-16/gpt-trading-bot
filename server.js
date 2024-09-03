@@ -28,7 +28,7 @@ wss.on('open', function() {
 
 // Event handler for when a message is received on the WebSocket
 wss.on("message", async function(message) {
-    console.log("Message received: " + message);
+    // console.log("Message received: " + message);
 
     // Parse the incoming message
     const currentEvent = JSON.parse(message)[0];
@@ -47,6 +47,9 @@ wss.on("message", async function(message) {
                 {role: "user", content: "Given the headline '" + currentEvent.headline + "', show me a number 1-100 detailing the impact of this headline."},
             ]
         };
+        
+
+        console.log("Headline received: " + currentEvent.headline.replace("&#/&#39;/g","'").replace(/&amp;/g, "&"));
 
         // Send a request to the OpenAI API to get the impact score
         await fetch("https://api.openai.com/v1/chat/completions", {
@@ -59,8 +62,8 @@ wss.on("message", async function(message) {
         })
         .then((data) => data.json())  // Parse the response to JSON
         .then((data) => {
-            console.log(data);  // Log the full response
-            console.log(data.choices[0].message);  // Log the specific message
+            // console.log(data);  // Log the full response
+            // console.log(data.choices[0].message);  // Log the specific message
             companyImpact = parseInt(data.choices[0].message.content);  // Extract and parse the impact score
         });
 
@@ -76,6 +79,7 @@ wss.on("message", async function(message) {
                 type: 'market',  // Market order type
                 time_in_force: 'day',  // Order is good for the day
             });
+            console.log("Order placed for " + tickerSymbol);
 
         // If the impact score is low (30 or below), close any existing position
         } else if (companyImpact <= 30) {
