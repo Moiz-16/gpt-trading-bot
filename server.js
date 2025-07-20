@@ -39,6 +39,8 @@ wss.on("message", async function(message) {
     // Check if the event is a news event (denoted by "T" field being "n")
     if(currentEvent.T === "n"){
         
+        // Start latency timer
+        const startTime = Date.now();
         // Prepare a request body for the OpenAI API to analyze the impact of the news headline
         const apiRequestBody = {
             "model": "gpt-3.5-turbo",
@@ -79,11 +81,14 @@ wss.on("message", async function(message) {
                 type: 'market',  // Market order type
                 time_in_force: 'day',  // Order is good for the day
             });
-            console.log("Order placed for " + tickerSymbol);
+            const latency = Date.now() - startTime;
+            console.log(`Order placed for ${tickerSymbol}. Latency: ${latency} ms`);
 
         // If the impact score is low (30 or below), close any existing position
         } else if (companyImpact <= 30) {
             let closedPosition = await alpaca.closePosition(tickerSymbol);  // Close the position for the ticker symbol
+            const latency = Date.now() - startTime;
+            console.log(`Position closed for ${tickerSymbol}. Latency: ${latency} ms`);
         }
     }
 });
